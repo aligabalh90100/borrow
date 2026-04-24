@@ -5,7 +5,7 @@ import secureStorage from "../secureStorage";
 export async function login(data: LoginFormValues) {
   await sleep(1000);
   const { email, password } = data;
-  if (email !== "ali@gmail.com" || password !== "password123") {
+  if (email !== "test@example.com" || password !== "password123") {
     throw new Error("Invalid credentials");
   }
 

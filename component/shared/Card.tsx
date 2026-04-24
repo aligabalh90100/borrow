@@ -1,7 +1,12 @@
 import colors from "@/constants/colors";
 import React from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+import {
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewProps,
+  ViewStyle,
+} from "react-native";
 interface ICard extends Omit<ViewProps, "style"> {
   style?: StyleProp<ViewStyle>;
   shadow?: boolean;

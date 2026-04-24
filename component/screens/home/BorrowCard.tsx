@@ -26,7 +26,7 @@ const BorrowCard = () => {
         <Switch
           style={styles.switch}
           value={hasCrypto}
-          onChange={handleToggleCrypto}
+          onValueChange={handleToggleCrypto}
         />
       </Card>
       {/* crypto  */}
@@ -36,7 +36,7 @@ const BorrowCard = () => {
         step={10}
         hasCrypto={hasCrypto}
         initialValue={50}
-        onValueChange={(val) => console.log(val)}
+        onValueChange={() => {}}
       />
     </Card>
   );
