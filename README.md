@@ -1,50 +1,167 @@
-# Welcome to your Expo app 👋
+# Borrow
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile app for smart borrowing — lets users set a borrow amount via an interactive arc slider, toggle crypto collateral to unlock higher limits, and view loan offers and credit card details.
 
-## Get started
+---
 
-1. Install dependencies
+## Demo
 
-   ```bash
-   npm install
-   ```
+### Screen Recording
 
-2. Start the app
+**[Watch Demo Video](https://drive.google.com/file/d/13ZYv42jBrpw_PG8Yflveboe7D8zltPGq/view?usp=sharing)**
 
-   ```bash
-   npx expo start
-   ```
+### Screenshots
 
-In the output, you'll find options to open the app in a
+| Splash                                     | Login                                    | Home                                   |
+| ------------------------------------------ | ---------------------------------------- | -------------------------------------- |
+| ![splash](./assets/screenshots/splash.png) | ![login](./assets/screenshots/login.png) | ![home](./assets/screenshots/home.png) |
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### APK / Expo Link
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+APK: [Download](https://drive.google.com/file/d/1c77e_M5x-dsPFzjHDK5cxhghe8DyMx7G/view?usp=sharing)
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Setup
+
+### Prerequisites
+
+- Node.js >= 18
+- Yarn
+- Expo CLI: `npm install -g expo`
+- For Android: Android Studio + emulator or physical device
+- For iOS: Xcode + simulator (macOS only)
+
+### Install
 
 ```bash
-npm run reset-project
+git clone https://github.com/aligabalh90100/borrow
+cd borrow
+yarn install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Run
 
-## Learn more
+```bash
+# Start dev server (Expo Go)
+yarn start
 
-To learn more about developing your project with Expo, look at the following resources:
+# Android emulator/device
+yarn android
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# iOS simulator
+yarn ios
 
-## Join the community
+# Web
+yarn web
+```
 
-Join our community of developers creating universal apps.
+### Test Login Credentials
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+Email:    test@example.com
+Password: password123
+```
+
+---
+
+## Libraries Used
+
+| Library                            | Purpose                                       |
+| ---------------------------------- | --------------------------------------------- |
+| `expo` ~54                         | Core Expo SDK                                 |
+| `expo-router` ~6                   | File-based navigation                         |
+| `@react-navigation/drawer`         | Side drawer navigation                        |
+| `@react-navigation/bottom-tabs`    | Bottom tab navigation                         |
+| `@tanstack/react-query`            | Server state, mutations, loading/error states |
+| `react-hook-form`                  | Form state management                         |
+| `yup` + `@hookform/resolvers`      | Form validation schema                        |
+| `expo-secure-store`                | Secure token storage (keychain/keystore)      |
+| `react-native-mmkv`                | Fast local key-value storage                  |
+| `react-native-reanimated`          | Smooth animations (arc slider)                |
+| `react-native-gesture-handler`     | Gesture support                               |
+| `react-native-keyboard-controller` | Keyboard-aware scroll behavior                |
+| `expo-image`                       | Optimized image rendering                     |
+| `react-native-svg` + transformer   | SVG icon support                              |
+| `react-native-safe-area-context`   | Safe area insets                              |
+
+---
+
+## Architecture
+
+### Folder Structure
+
+```
+borrow/
+├── app/                        # Expo Router file-based routes
+│   ├── _layout.tsx             # Root layout (providers)
+│   ├── (splash)/               # Splash screen group
+│   ├── (auth)/                 # Auth group (login)
+│   └── (drawer)/
+│       └── (tabs)/             # Tab screens inside drawer
+├── component/
+│   ├── buttons/                # BaseButton
+│   ├── inputs/                 # EmailInput, PasswordInput, BaseTextInput
+│   ├── loading/                # Loading indicator
+│   ├── shared/                 # Header, Card, ArcSlider, ErrorMessage, BaseText
+│   └── screens/
+│       └── home/               # BorrowCard, OffersSlider, CreditCard
+├── hooks/
+│   └── login/useLogin.ts       # Login logic hook
+├── services/
+│   ├── auth/                   # Login/logout (mock API)
+│   └── secureStorage.ts        # Typed secure storage wrapper
+├── constants/
+│   └── colors.ts               # App color palette
+├── assets/
+│   ├── images/                 # App icons, splash
+│   ├── screenshots/            # README screenshots
+│   └── svg/                    # Custom SVG components
+└── validations/
+    └── authSchema.ts           # Yup login schema
+```
+
+### Navigation Flow
+
+```
+Splash (checks token)
+  ├── has token  → /homeScreen  (Drawer → Tabs)
+  └── no token   → /loginScreen (Auth)
+
+Drawer
+  └── Tabs
+        ├── Home      (BorrowCard, OffersSlider, CreditCard)
+        ├── Notes
+        ├── Money
+        └── Bills
+```
+
+### Key Decisions
+
+**File-based routing (Expo Router)**
+Groups `(splash)`, `(auth)`, `(drawer)` are layout groups — they share layouts without adding path segments. Clean separation between auth and app shells.
+
+**TanStack Query for mutations**
+Login is a `useMutation` with `onSuccess` handling token storage + navigation. Error state surfaces naturally from the mutation without extra local state.
+
+**Mock auth service**
+`services/auth/index.ts` simulates a real API with a 1 s delay and credential check. Swap the function body for a real `fetch`/`axios` call when a backend is ready — the hook and UI stay unchanged.
+
+**expo-secure-store for token**
+Token persisted in device keychain (iOS) / keystore (Android). Checked on every cold start in the splash screen to decide routing.
+
+**Custom ArcSlider**
+Arc-shaped borrow amount selector built with `react-native-reanimated` and `react-native-gesture-handler`. Max value dynamically changes (5 000 → 10 000) when user toggles crypto collateral ownership.
+
+**Component/hook separation**
+Every screen delegates logic to a custom hook (`useLogin`, etc.). Screen files stay presentational only.
+
+---
+
+## Assumptions
+
+- **Mock backend** — no real API exists; credentials are hardcoded (`test@example.com` / `password123`).
+- **Single user session** — no refresh token logic; token is a static string for demo purposes.
+- **Crypto toggle** is UI-only — does not call any blockchain or verification service.
+- **Offers and credit card data** are static/placeholder — no real loan products wired up.
+- Target platforms: **Android + iOS**. Web build works but is not a primary target.
