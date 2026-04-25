@@ -158,6 +158,41 @@ Every screen delegates logic to a custom hook (`useLogin`, etc.). Screen files s
 
 ---
 
+## Testing
+
+### Stack
+
+| Tool                              | Purpose                        |
+| --------------------------------- | ------------------------------ |
+| `jest`                            | Test runner                    |
+| `@testing-library/react-native`   | Component rendering + querying |
+| `@testing-library/user-event`     | User interaction simulation    |
+| `react-native-keyboard-controller/jest` | Keyboard controller mock |
+
+### Run Tests
+
+```bash
+yarn test
+```
+
+### Test Coverage
+
+#### Login Screen (`__tests__/unit/loginScreen.test.tsx`)
+
+| Test | Description |
+| ---- | ----------- |
+| Render Email, Password, Login Button | Checks all three UI elements mount correctly |
+| Login with invalid credentials | Types wrong password → expects `error-message` testID with "Invalid credentials" |
+| Login with valid credentials | Types correct creds → expects `router.replace("/homeScreen")` called |
+
+### Setup
+
+`jest.setup.ts` mocks:
+- `react-native-keyboard-controller` — uses built-in jest mock
+- `expo-router` — stubs `router.push`, `router.replace`, `router.back`
+
+---
+
 ## Assumptions
 
 - **Mock backend** — no real API exists; credentials are hardcoded (`test@example.com` / `password123`).

@@ -68,7 +68,7 @@ const LoginScreen = () => {
           name="password"
           error={errors.password?.message}
         />
-        <ErrorMessage message={loginError?.message} />
+        <ErrorMessage testID="error-message" message={loginError?.message} />
         <BaseButton
           style={styles.btnStyles}
           title="Login"
